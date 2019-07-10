@@ -1,30 +1,21 @@
 ---
-
 galaxy_info:
-  author: Alexandre Chaussier
-  description: Configure system accounts
-  company: Infopen (http://infopen.pro)
-  license: MIT
-  min_ansible_version: 1.4
-
+  author: 'A Chaussier, L Machetel'
+  description: 'Configure system accounts'
+  company: 'Temelio (https://www.temelio.com)'
+  license: 'MIT'
+  min_ansible_version: 2.4
+  github_branch: 'master'
+  role_name: 'account-management'
   platforms:
-    - name: Ubuntu
+    - name: 'Ubuntu'
       versions:
-        - trusty
-        - utopic
-        - vivid
-    - name: Debian
+        - 'trusty'
+        - 'xenial'
+        - 'bionic'
+    - name: 'Debian'
       versions:
-        - squeeze
-        - wheezy
-        - jessy
-    - name: EL
-      versions:
-        - 6
-        - 7
-
-  categories:
-    - system
-
+        - 'stretch'
+  galaxy_tags:
+    - 'system'
 dependencies: []
-
