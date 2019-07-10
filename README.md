@@ -3,10 +3,10 @@ account-management
 
 [![License](https://img.shields.io/badge/license-MIT%20License-brightgreen.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://travis-ci.com/Temelio/ansible-role-account-management.svg?branch=master)](https://travis-ci.com/Temelio/ansible-role-account-management)
-[![Updates](https://pyup.io/repos/github/Temelio/ansible-role-statsd/shield.svg)](https://pyup.io/repos/github/Temelio/ansible-role-statsd/)
-[![Python 3](https://pyup.io/repos/github/Temelio/ansible-role-statsd/python-3-shield.svg)](https://pyup.io/repos/github/Temelio/ansible-role-statsd/)
-[![Ansible Role](https://img.shields.io/ansible/role/12562.svg)](https://galaxy.ansible.com/Temelio/statsd/)
-[![GitHub tag](https://img.shields.io/github/tag/Temelio/ansible-role-statsd.svg)](https://github.com/Temelio/ansible-role-stasd/tags)
+[![Updates](https://pyup.io/repos/github/Temelio/ansible-role-account-management/shield.svg)](https://pyup.io/repos/github/Temelio/ansible-role-account-management/)
+[![Python 3](https://pyup.io/repos/github/Temelio/ansible-role-account-managemnt/python-3-shield.svg)](https://pyup.io/repos/github/Temelio/ansible-role-account-management/)
+[![Ansible Role](https://img.shields.io/ansible/role/41920.svg)](https://galaxy.ansible.com/Temelio/account_management/)
+[![GitHub tag](https://img.shields.io/github/tag/Temelio/ansible-role-account-managemnt.svg)](https://github.com/Temelio/ansible-role-account-management/tags)
 
 
 Manage users and groups, and authorized keys.
@@ -98,16 +98,16 @@ account_management_users : []
 
 ## Generating a password hash:
 
-# On Debian/Ubuntu (via the package "whois")
+### On Debian/Ubuntu (via the package "whois")
 mkpasswd --method=SHA-512 --rounds=4096
 
-# OpenSSL (note: this will only make md5crypt.  While better than plantext it should not be     considered fully secure)
+### OpenSSL (note: this will only make md5crypt.  While better than plantext it should not be     considered fully secure)
 openssl passwd -1
 
-# Python (change password and salt values)
+### Python (change password and salt values)
 python -c "import crypt, getpass, pwd; print crypt.crypt('password', '\$6\$SALT\$')"
 
-# Perl (change password and salt values)
+### Perl (change password and salt values)
 perl -e 'print crypt("password","\$6\$SALT\$") . "\n"'
 
 ## Dependencies
@@ -119,7 +119,7 @@ None
 ``` yaml
 - hosts: servers
   roles:
-    - { role: temelio.account-management }
+    - { role: temelio.account_management }
 ```
 
 ## License
