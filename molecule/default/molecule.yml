@@ -1,0 +1,120 @@
+---
+
+dependency:
+  name: 'galaxy'
+driver:
+  name: 'docker'
+lint:
+  name: 'yamllint'
+platforms:
+  - name: "account-managemnt-docker-stretch"
+    image: 'minimum2scp/systemd-stretch:latest'
+    command: '/sbin/init'
+    cap_add:
+      - 'SYS_PTRACE'
+    privileged: True
+  - name: "account-management-docker-xenial"
+    image: 'solita/ubuntu-systemd:16.04'
+    command: '/sbin/init'
+    cap_add:
+      - 'SYS_PTRACE'
+    privileged: True
+  - name: "account-management-docker-bionic"
+    image: 'solita/ubuntu-systemd:18.04'
+    command: '/sbin/init'
+    cap_add:
+      - 'SYS_PTRACE'
+    privileged: True
+  - name: "account-management-docker-trusty"
+    image: 'ubuntu:trusty'
+    cap_add:
+      - 'SYS_PTRACE'
+    privileged: True
+provisioner:
+  name: 'ansible'
+  lint:
+    name: 'ansible-lint'
+  inventory:
+    group_vars:
+      all:
+        account_management_groups:
+          - name: 'my-group'
+            gid: 1500
+            state: 'absent'
+            is_system: True
+          - name: 'my-group2'
+            gid: 1500
+            state: 'present'
+            is_system: True
+          - name: 'my-user'
+            gid: 1501
+            state: 'present'
+            is_system: True
+          - name: 'my-user2'
+            gid: 1502
+            state: 'present'
+            is_system: True
+          - name: 'my-user3'
+            gid: 1503
+            state: 'present'
+            is_system: True
+        account_management_users:
+          - name: 'my-user'
+            append: False
+            comment: 'Foobar'
+            createhome: True
+            home_mode: '0750'
+            group: 'my-user'
+            groups:
+              - 'my-user'
+            uid: 1500
+            password: 'qsdqdqsd'
+            state: 'absent'
+            is_system: True
+            remove: True
+            home: '/var/foo'
+            shell: '/bin/sh'
+          - name: 'my-user2'
+            append: False
+            comment: 'Foobar'
+            createhome: True
+            home: '/home/my-user2'
+            home_mode: '0750'
+            group: 'my-user2'
+            groups:
+              - 'my-user2'
+            authorized_public_keys:
+              - filename: 'files/ssh_public_keys/test.pub'
+                state: 'present'
+                key_options: ''
+            exclusive_public_keys: False
+          - name: 'my-user3'
+            uid: 1503
+            password: 'qsdqdqsd'
+            state: 'present'
+            is_system: False
+            remove: True
+            skeleton: '/etc/skel/'
+            home: '/home/my-user3'
+            home_mode: '0755'
+            group: 'my-user3'
+            groups:
+              - 'my-user3'
+              - 'my-group2'
+            shell: '/bin/sh'
+            authorized_public_keys:
+              - filename: 'files/ssh_public_keys/test.pub'
+                state: 'present'
+                key_options: ''
+            exclusive_public_keys: False
+    host_vars: {}
+scenario:
+  name: 'default'
+verifier:
+  name: 'testinfra'
+  additional_files_or_dirs:
+    - '../../tests'
+  lint:
+    name: 'flake8'
+  options:
+    sudo: True

@@ -1,11 +1,15 @@
 ---
-
 # Defaults file for account-management
 
-# List of sudoers.d subdirectory to create
-account_management_sudo_directories:
-  - groups
-  - users
+# if you want to use skel set this variable to true
+am_copy_skeleton_files: false
+# Template:
+#  - dest: '/etc/skel/.vimrc'
+#    src: "{{ role_path }}/files/vimrc"
+#    owner: 'root'
+#    group: 'root'
+#    mode: '0644'
+am_skeleton_files_config: []
 
 # List of groups to create
 #
@@ -14,8 +18,6 @@ account_management_sudo_directories:
 #   gid: 1500               # Set the GID       (Default : False)
 #   state: absent           # Should exists ?   (Default : present)
 #   is_system: True         # Is system group ? (Default : False)
-#   sudo_rules: []          # Sudo rules for the group
-#   sudo_sub_dir: "groups"  # Where store sudoers rule
 account_management_groups: []
 
 # List of users to create
@@ -33,11 +35,9 @@ account_management_groups: []
 #   state: absent           # Should exists ?           (Default : present)
 #   is_system: True         # Is system user ?          (Default : False)
 #   remove: True            # Should be removed ?       (Default : False)
-#   skeleton: /skels/foo    # Skeleton used at create   (Default : False)
+#   skeleton: /etc/skel    # Skeleton used at create   (Default : False)
 #   home: "/var/foo"        # Home path  (Default : /home/username)
 #   shell: "/bin/sh"        # User shell (Default : /usr/sbin/nologin)
-#   sudo_rules: []          # Sudo rules for the user
-#   sudo_sub_dir: "users"           # Where store sudoers rule
 #   authorized_public_keys: []      # Public ssh keys used for authentication
 #   exclusive_public_keys: False    # Only listed keys exists in authorized-keys
 #                                   # (Default: True)
@@ -47,8 +47,4 @@ account_management_groups: []
 #   state: "absent"                        # Used for auth (Default : present))
 #   key_options: ""                        # Add ssh options for this key
 #
-# Notes:
-#   - encrypted password can be created by the followin command:
-#       python -c 'import crypt; print crypt.crypt("password", "$1$SomeSalt$")'
 account_management_users: []
-

@@ -1,0 +1,4 @@
+" Vim configuration file
+
+" Global settings
+set background=dark

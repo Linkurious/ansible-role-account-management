@@ -1,101 +1,60 @@
 ---
-
 # Main task file for account-management role
 
-- name: Load the OS specific varibles
-  include_vars: "{{ role_path }}/vars/{{ ansible_os_family }}.yml"
+- name: 'INIT | Manage variables to use for our target'
+  include_tasks: "{{ role_path }}/tasks/manage_variables.yml"
   tags:
-    - install
-    - user-management
+    - 'role::account-management'
+    - 'role::account-management::config'
+    - 'role::account-mangement::init'
+    - 'role::account-management::install'
 
+- name: 'CREATE SKELETON | copy templates files'
+  template:
+    dest: "{{ item.dest }}"
+    src: "{{ item.src }}"
+    mode: "{{ item.mode }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+  with_items: "{{ am_skeleton_files_config }}"
+  when: am_copy_skeleton_files
 
-# Install required packages
-- include: install_debian.yml
+- name: 'CREATE | accounts'
+  include_tasks: "{{ role_path }}/tasks/create_accounts.yml"
+  no_log: true
   tags:
-    - install
-    - user-management
-  when: ansible_os_family == "Debian"
+    - 'role::account-management'
+    - 'role::account-management::config'
+    - 'role::account-mangement::init'
+    - 'role::account-mangement::user-management'
 
 
-# Install required packages
-- include: install_redhat.yml
-  tags:
-    - install
-    - user-management
-  when: ansible_os_family == "RedHat"
-
-
-- include: create_accounts.yml
-  tags:
-    - config
-    - user-management
-    - sudo
-
-
-- include: configure_sudo.yml
-  tags:
-    - config
-    - user-management
-    - sudo
-
-
-- name: Create user authorized-keys file
+- name: 'CREATE | Create user authorized-keys file'
   become: True
+  no_log: true
   authorized_key:
-    user: "{{ item.0.name }}"
+    comment: "{{ item.comment | default('') }}"
+    exclusive: "{{ item.0.exclusive_public_keys | default(False) }}"
     key: "{{ lookup('file', item.1.filename) }}"
-    state: "{{ item.1.state | default('present') }}"
     key_options: "{{ item.1.key_options | default('') }}"
-    exclusive: "{{ item.0.exclusive_public_keys | default(True) }}"
+    manage_dir: "{{ item.manage_dir | default(True) }}"
+    path: "{{ item.0.home | default ('/home/' + item.0.name) }}/.ssh/authorized_keys"
+    state: "{{ item.1.state | default('present') }}"
+    user: "{{ item.0.name }}"
   with_subelements:
     - "{{ account_management_users }}"
-    - "authorized_public_keys"
+    - 'authorized_public_keys'
+    - flags:
+      skip_missing: true
   tags:
-    - config
-    - user-management
+    - 'role::account-management'
+    - 'role::account-management::config'
+    - 'role::account-mangement::init'
+    - 'role::account-mangement::user-management'
 
-
-- name: Get home for each users
-  become: True
-  shell: "getent passwd {{ item.name | quote }} | cut -d':' -f6"
-  register: home_users
-  changed_when: False
-  with_items: "{{ account_management_users }}"
-  when:
-    - "'{{ item.state | default('present') }}' == 'present'"
+- name: 'ACCOUNTS | SECURITY | Secure home folders'
+  include_tasks: "{{ role_path }}/tasks/secure_home.yml"
+  no_log: true
   tags:
-    - config
-    - user-management
-
-
-- name: Get primary group for each users
-  become: True
-  shell: "id -gn {{ item.name | quote }}"
-  register: primary_group_users
-  changed_when: False
-  with_items: "{{ account_management_users }}"
-  when:
-    - "'{{ item.state | default('present') }}' == 'present'"
-  tags:
-    - config
-    - user-management
-
-
-- name: Change permissions for user home directory
-  become: True
-  file:
-    dest: "{{ item.1.stdout }}"
-    group: "{{ item.0.name }}"
-    owner: "{{ item.2.stdout }}"
-    mode: "{{ item.0.home_mode | default('0700') }}"
-  with_together:
-    - account_management_users
-    - home_users.results
-    - primary_group_users.results
-  when:
-    - account_management_users
-    - "'{{ item.0.state | default('present') }}' == 'present'"
-  tags:
-    - config
-    - user-management
-
+    - 'role::account-management'
+    - 'role::account-management::config'
